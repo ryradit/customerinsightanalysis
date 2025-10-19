@@ -1,34 +1,76 @@
-# AI Copilot Consumer Insights
+# 🚀 AI-Powered Consumer Feedback Analysis Platform
 
-An AI-powered consumer insights platform that processes customer feedback data from Excel files and generates actionable business insights using generative AI models like Gemini and OpenAI GPT.
+<div align="center">
 
-## 🚀 Features
+**Akasha Indonesia Consumer Insights Platform**  
+*Transforming customer feedback into actionable business intelligence*
 
-- **Excel File Upload**: Secure drag-and-drop upload interface for customer feedback data
-- **AI-Powered Analysis**: 
-  - Topic classification (price, taste, packaging, product quality, customer service)
-  - Sentiment analysis (positive, neutral, negative)
-  - Key findings summarization
-- **Business Insights**: Generate 3-5 data-driven recommendations for marketing, R&D, and operations teams
-- **Interactive Visualizations**: Charts and graphs using Chart.js and React-Chartjs-2
-- **JSON Export**: Structured output format for easy integration with other systems
-- **Multiple AI Models**: Support for both Google Gemini and OpenAI GPT
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini-green?logo=google)](https://ai.google.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 
-## 🛠️ Tech Stack
+</div>
 
-- **Frontend**: Next.js 14 + TypeScript + React 18
-- **Styling**: Tailwind CSS
-- **Charts**: Chart.js + React-Chartjs-2
-- **File Processing**: SheetJS (xlsx)
-- **AI Integration**: OpenAI API + Google Generative AI
-- **Development**: ESLint + Prettier
+## ✨ Overview
 
-## 📋 Quick Start
+A sophisticated AI-powered platform designed for **Akasha Indonesia** to analyze customer feedback data and generate actionable business insights. The platform uses **real Google Gemini AI analysis** (not mock data) to provide comprehensive consumer intelligence for FMCG operations.
 
-### 1. Clone and Setup
+## 🎯 Key Features
+
+### 🔍 **Intelligent Analysis**
+- **Real AI Processing**: Google Gemini integration for authentic sentiment & topic analysis
+- **Multilingual Support**: Native Indonesian and English feedback processing
+- **FMCG-Specific**: Tailored for taste, quality, price, packaging analysis
+- **Smart Column Detection**: Automatically identifies feedback, product, region columns
+
+### 📊 **Four-Tab Dashboard**
+1. **📤 Upload & Overview**: File upload with intelligent preview
+2. **📈 Insights Dashboard**: Interactive charts and AI-generated summaries  
+3. **🔍 Detailed Analysis**: Individual feedback classification with filtering
+4. **💡 Recommendations & Actions**: Business recommendations with PDF reports
+
+### 🤖 **Advanced AI Capabilities**
+- **Sentiment Analysis**: Positive, neutral, negative classification with confidence scores
+- **Topic Classification**: Taste, quality, price, packaging, availability, promotion, service, brand
+- **Regional Insights**: Indonesian market analysis (Jakarta, Surabaya, Bandung, etc.)
+- **Business Intelligence**: Actionable recommendations for Marketing, R&D, Operations teams
+- **What-If Scenarios**: AI-powered business impact simulations
+
+### 📄 **Professional Reporting**
+- **PDF Generation**: Comprehensive business reports with jsPDF
+- **Export Options**: JSON, Excel data export
+- **Management Reports**: Executive summaries with KPIs and action items
+- **Visual Charts**: Interactive data visualization with Chart.js
+
+## 🛠️ Technology Stack
+
+**Frontend Framework:**
+- **Next.js 14** - App Router, Server Components, TypeScript support
+- **React 18** - Modern hooks, client-side interactivity
+- **TypeScript** - Full type safety and developer experience
+
+**AI & Processing:**
+- **Google Gemini AI** - Real sentiment and topic analysis (no mock data)
+- **SheetJS (xlsx)** - Excel and CSV file processing
+- **Intelligent Fallback** - Keyword-based analysis when AI unavailable
+
+**UI & Visualization:**
+- **Tailwind CSS** - Custom Akasha branding with blue-green gradient theme
+- **Chart.js + React-Chartjs-2** - Interactive charts and data visualization
+- **react-dropzone** - File upload with drag-and-drop
+- **jsPDF + html2canvas** - Professional PDF report generation
+
+**Development:**
+- **ESLint + Prettier** - Code quality and formatting
+- **Git** - Version control with comprehensive commit history
+
+## 🚀 Quick Start
+
+### 1. Clone Repository
 ```bash
-git clone <repository-url>
-cd aicopilotconsumerinsight
+git clone https://github.com/ryradit/ai-powered-consumer-feedback-analysis.git
+cd ai-powered-consumer-feedback-analysis
 ```
 
 ### 2. Install Dependencies
@@ -36,112 +78,121 @@ cd aicopilotconsumerinsight
 npm install
 ```
 
-### 3. Environment Configuration
+### 3. Environment Setup
 ```bash
-# Copy the environment template
+# Copy environment template
 cp .env.example .env.local
 
-# Edit .env.local with your API keys
-OPENAI_API_KEY=your_openai_api_key_here
-GEMINI_API_KEY=your_gemini_api_key_here
+# Add your Google Gemini API key
+GOOGLE_API_KEY=your_google_gemini_api_key_here
 ```
+
+**Get Google Gemini API Key:**
+- Visit: https://makersuite.google.com/app/apikey
+- Free tier available for development
 
 ### 4. Run Development Server
 ```bash
 npm run dev
 ```
 
-### 5. Access the Application
-- Open your browser to `http://localhost:3000`
-- API documentation available at `http://localhost:3000/api/analyze`
+### 5. Access Platform
+- **Application**: http://localhost:3000
+- **API Docs**: http://localhost:3000/api/analyze
 
-## 📁 Project Structure
+## 📁 Project Architecture
 
 ```
-aicopilotconsumerinsight/
-├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── analyze/
-│   │   │       └── route.ts       # API endpoint for file analysis
-│   │   ├── globals.css            # Global styles and Tailwind CSS
-│   │   ├── layout.tsx             # Root layout component
-│   │   └── page.tsx               # Home page with file upload
-│   ├── components/
-│   │   ├── AnalysisResults.tsx    # Results display with charts
-│   │   ├── FileUpload.tsx         # File upload component
-│   │   └── Header.tsx             # Header component
-│   └── types/
-│       └── analysis.ts            # TypeScript type definitions
-├── backup/                        # Original files backup
-├── package.json
-├── tailwind.config.ts
-├── tsconfig.json
-├── next.config.js
-└── README.md
+src/
+├── app/
+│   ├── api/
+│   │   ├── analyze/route.ts      # Real Gemini AI analysis endpoint
+│   │   └── preview/route.ts      # File preview generation
+│   ├── globals.css               # Tailwind + custom Akasha styling
+│   ├── layout.tsx                # Root layout with Akasha branding
+│   └── page.tsx                  # Main four-tab interface
+├── components/
+│   ├── UploadOverview.tsx        # Tab 1: File upload & preview
+│   ├── InsightsDashboard.tsx     # Tab 2: Charts & AI summary
+│   ├── DetailedAnalysis.tsx      # Tab 3: Individual feedback analysis
+│   ├── RecommendationsActions.tsx # Tab 4: Business recommendations
+│   └── Header.tsx                # Akasha-branded header with logo
+├── types/
+│   └── analysis.ts               # TypeScript interfaces for FMCG data
+public/
+└── logoakasha.png                # Official Akasha Indonesia logo
 ```
 
-## 🔧 Available Scripts
+## 🎮 How to Use
 
-```bash
-# Development
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
+### 1. **Prepare Feedback Data**
+Create Excel (.xlsx, .xls) or CSV file with:
+- **Required**: Customer feedback/comments column
+- **Optional**: Product, region, category, date, rating columns
+- **Languages**: Indonesian and English supported
+- **Size**: Maximum 10MB per file
 
-# VS Code Tasks
-# Press Ctrl+Shift+P > "Tasks: Run Task" > "Run Development Server"
-```
+### 2. **Upload & Preview**
+- Drag-drop file or click to browse
+- **Auto-detection**: Platform identifies feedback columns
+- **Preview**: See sample data and file statistics
+- **Validation**: File format and size verification
 
-## 🎯 How to Use
+### 3. **AI Analysis** (Real Gemini Processing)
+- **Comprehensive Analysis**: Single API call for all insights
+- **Processing Time**: 10-30 seconds depending on file size
+- **Real Results**: Authentic AI analysis, not mock data
+- **Fallback**: Intelligent keyword analysis if AI unavailable
 
-### 1. Prepare Your Data
-- Create an Excel file (.xlsx or .xls) with customer feedback
-- Include feedback text in any column (feedback, comments, reviews, etc.)
-- Optional: Add customer info, dates, ratings in separate columns
-- First row should contain column headers
+### 4. **Business Intelligence**
+- **Interactive Dashboard**: Charts, metrics, regional analysis
+- **Detailed Feedback**: Individual sentiment scores and topic tags
+- **Strategic Recommendations**: Department-specific action items
+- **What-If Scenarios**: Business impact simulations
 
-### 2. Upload and Analyze
-- Choose your preferred AI model (Gemini or OpenAI)
-- Drag and drop your Excel file or click to browse
-- Click "Analyze Customer Feedback" button
-- Wait for AI processing (typically 2-5 seconds)
+### 5. **Professional Reporting**
+- **PDF Reports**: Comprehensive business intelligence reports
+- **Data Export**: JSON and Excel formats for integration
+- **Management Summary**: Executive-level insights and KPIs
 
-### 3. View Results
-- **Sentiment Distribution**: Visual breakdown of positive/neutral/negative feedback
-- **Topic Distribution**: Chart showing discussion frequency by topic
-- **Key Findings**: AI-generated insights about customer sentiment patterns
-- **Business Recommendations**: 3-5 actionable recommendations for different teams
+## 🤖 AI Analysis Features
 
-### 4. Export Results
-- Download results as JSON for integration with other tools
-- Print comprehensive report for presentations
+### **Real Gemini AI Processing:**
+- **Sentiment Classification**: Authentic positive/neutral/negative analysis
+- **Topic Detection**: Real identification of taste, quality, price themes
+- **Key Phrase Extraction**: Important Indonesian/English phrases
+- **Business Summaries**: AI-generated executive insights
+- **Regional Patterns**: Geographic sentiment distribution
 
-## 🤖 AI Model Configuration
+### **FMCG-Specific Intelligence:**
+- **Product Categories**: Beverages, snacks, dairy, frozen, personal care
+- **Indonesian Regions**: Jakarta, Surabaya, Bandung, Medan, Makassar, Yogyakarta
+- **Business Context**: Akasha Indonesia market positioning and competitive analysis
 
-### Supported Models
-- **Google Gemini** (default): Fast processing, good for general analysis
-- **OpenAI GPT**: Advanced reasoning, detailed insights
+### **Intelligent Fallbacks:**
+- **Keyword Analysis**: Indonesian/English keyword-based sentiment when AI unavailable
+- **Data-Driven Insights**: Real data patterns even without AI processing
+- **Graceful Degradation**: Always provides meaningful analysis
 
-### Topic Categories
-The system classifies feedback into these categories:
-- Price concerns and value perception
-- Taste and flavor feedback
-- Packaging and presentation issues
-- Product quality assessments
-- Customer service experiences
-
-## 📊 API Usage
+## 📊 API Documentation
 
 ### Analyze Endpoint
 ```bash
 POST /api/analyze
 Content-Type: multipart/form-data
 
-# Form data:
-# - file: Excel file (.xlsx/.xls)
-# - aiModel: "gemini" or "openai"
+# Parameters:
+# - file: Excel/CSV file (required)
+# - aiModel: "gemini" (default)
+```
+
+### Preview Endpoint
+```bash
+POST /api/preview
+Content-Type: multipart/form-data
+
+# Parameters:
+# - file: Excel/CSV file (required)
 ```
 
 ### Response Format
@@ -149,93 +200,124 @@ Content-Type: multipart/form-data
 {
   "status": "success",
   "analysis": {
-    "totalFeedback": 150,
+    "totalFeedback": 250,
     "sentimentDistribution": {
-      "positive": 60,
-      "neutral": 45,
-      "negative": 45
+      "positive": 125,
+      "neutral": 75,
+      "negative": 50
     },
     "topicDistribution": {
-      "price": 38,
-      "taste": 45,
-      "packaging": 30,
-      "product_quality": 53,
-      "customer_service": 23
+      "taste": 80,
+      "quality": 95,
+      "price": 60,
+      "packaging": 45
     },
-    "keyFindings": [
-      "Product quality is the most discussed topic among customers",
-      "Taste satisfaction shows strong positive sentiment correlation"
-    ],
+    "regionalDistribution": {
+      "jakarta": 87,
+      "surabaya": 50,
+      "bandung": 38
+    },
+    "aiSummary": "Real AI-generated business summary...",
     "businessRecommendations": [
       {
-        "category": "rnd",
-        "recommendation": "Invest in product quality improvements based on customer feedback patterns",
+        "department": "R&D Division",
+        "recommendation": "Develop regional variants...",
         "priority": "high",
-        "impact": "Potential 20% increase in customer satisfaction scores",
-        "implementationCost": "medium"
+        "impact": "25% market penetration increase",
+        "timeframe": "6-9 months"
       }
     ]
-  },
-  "processingTime": "2.3 seconds"
+  }
 }
 ```
 
-## 🔒 Security & Limits
+## 🔧 Development
 
-- **File Size**: Maximum 10MB per upload
-- **File Types**: Only .xlsx and .xls files accepted
-- **API Keys**: Stored securely in environment variables
-- **Data Privacy**: Uploaded files are processed in memory and not stored
+### Available Scripts
+```bash
+npm run dev          # Development server
+npm run build        # Production build  
+npm run start        # Production server
+npm run lint         # Code quality check
+```
+
+### Code Quality
+- **TypeScript**: Full type safety for FMCG data structures
+- **ESLint**: Code quality and consistency
+- **Tailwind CSS**: Akasha-branded design system
+- **Component Architecture**: Modular, reusable React components
+
+## 🔒 Security & Performance
+
+### **Security Features:**
+- **Environment Variables**: Secure API key management
+- **File Validation**: Type and size restrictions
+- **Input Sanitization**: XSS and injection prevention
+- **No Data Storage**: Files processed in memory only
+
+### **Performance Optimizations:**
+- **Next.js Image**: Automatic image optimization for Akasha logo
+- **Server Components**: Optimal rendering strategy
+- **Code Splitting**: Lazy loading for components
+- **AI Timeout**: 30-second timeout with graceful fallback
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### **Vercel (Recommended)**
 ```bash
 npm install -g vercel
 vercel
+
+# Set environment variable:
+# GOOGLE_API_KEY=your_api_key_here
 ```
 
-### Manual Deployment
+### **Manual Deployment**
 ```bash
 npm run build
 npm run start
 ```
 
-Remember to set environment variables in your deployment platform.
+### **Environment Configuration**
+Required environment variables:
+- `GOOGLE_API_KEY`: Google Gemini API key (required for AI analysis)
 
-## 🛠️ Development
+## 🎨 Branding
 
-### Code Style
-The project uses ESLint and Prettier for code formatting:
-```bash
-npm run lint          # Check for linting issues
-```
+The platform features **authentic Akasha Indonesia branding**:
+- **Logo Integration**: Official Akasha logo in header and avatars
+- **Color Scheme**: Blue-green gradient theme matching corporate identity
+- **Typography**: Professional, modern design language
+- **Regional Focus**: Indonesian market terminology and context
 
-### Adding New AI Models
-1. Create a new service function in `/src/app/api/analyze/route.ts`
-2. Add the model option to the file upload component
-3. Update TypeScript types as needed
+## 🤝 Contributing
 
-### Customizing Topic Categories
-Edit the analysis logic in `/src/app/api/analyze/route.ts` to modify:
-- Topic classification categories
-- Sentiment analysis thresholds
-- Business recommendation templates
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
-## 📝 License
+## 📄 License
 
-MIT License - see LICENSE file for details
-
-## 🤝 Support
-
-For questions, issues, or feature requests:
-1. Check the issues section on GitHub
-2. Create a new issue with detailed description
-3. Contact the development team
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Next.js team for the amazing framework
-- OpenAI and Google for AI model APIs
-- Chart.js for visualization capabilities
-- Tailwind CSS for styling system
+- **Akasha Indonesia** for platform requirements and branding
+- **Google AI** for Gemini API capabilities
+- **Next.js Team** for the powerful React framework
+- **Tailwind CSS** for the utility-first CSS framework
+- **Chart.js** for interactive data visualization
+- **Open Source Community** for the amazing tools and libraries
+
+---
+
+<div align="center">
+
+**Built with ❤️ for Akasha Indonesia**  
+*Transforming Consumer Feedback into Business Success*
+
+[🌐 Live Demo](https://your-deployment-url.vercel.app) • [📚 Documentation](https://github.com/ryradit/ai-powered-consumer-feedback-analysis) • [🐛 Report Bug](https://github.com/ryradit/ai-powered-consumer-feedback-analysis/issues)
+
+</div>
