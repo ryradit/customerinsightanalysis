@@ -4,7 +4,10 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/next"
+      "use": "@vercel/next",
+      "config": {
+        "runtime": "nodejs18.x"
+      }
     }
   ],
   "routes": [
@@ -22,10 +25,16 @@
   },
   "functions": {
     "src/app/api/analyze/route.ts": {
-      "maxDuration": 30
+      "runtime": "nodejs18.x",
+      "maxDuration": 30,
+      "memory": 1024
     },
     "src/app/api/preview/route.ts": {
-      "maxDuration": 15
+      "runtime": "nodejs18.x",
+      "maxDuration": 15,
+      "memory": 512
     }
-  }
+  },
+  "regions": ["sin1"],
+  "framework": "nextjs"
 }
