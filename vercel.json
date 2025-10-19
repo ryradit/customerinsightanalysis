@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "name": "akasha-consumer-insights",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "GOOGLE_API_KEY": "@google_api_key"
+  },
+  "functions": {
+    "src/app/api/analyze/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/preview/route.ts": {
+      "maxDuration": 15
+    }
+  }
+}

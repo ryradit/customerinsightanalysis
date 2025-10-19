@@ -1,11 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
+  output: 'standalone',
+  images: {
+    domains: ['localhost'],
   },
-  env: {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: '/api/:path*',
+      },
+    ]
   },
 }
 
