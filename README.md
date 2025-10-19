@@ -20,7 +20,7 @@ An AI-powered consumer insights platform that processes customer feedback data f
 - **Styling**: Tailwind CSS
 - **Charts**: Chart.js + React-Chartjs-2
 - **File Processing**: SheetJS (xlsx)
-- **AI Integration**: OpenAI API + Google Generative AI
+- **AI Integration**: Google Generative AI
 - **Development**: ESLint + Prettier
 
 ## 📋 Quick Start
