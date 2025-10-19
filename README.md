@@ -304,7 +304,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- **Akasha Indonesia** for platform requirements and branding
+- **Akasha Wira International** for platform requirements and branding
 - **Google AI** for Gemini API capabilities
 - **Next.js Team** for the powerful React framework
 - **Tailwind CSS** for the utility-first CSS framework
@@ -315,7 +315,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 <div align="center">
 
-**Built with ❤️ for Akasha Indonesia**  
+**Built by Ryan Radityatama for Assignment for Akasha Wira International, Tbk.**  
 *Transforming Consumer Feedback into Business Success*
 
 [🌐 Live Demo](https://your-deployment-url.vercel.app) • [📚 Documentation](https://github.com/ryradit/ai-powered-consumer-feedback-analysis) • [🐛 Report Bug](https://github.com/ryradit/ai-powered-consumer-feedback-analysis/issues)
