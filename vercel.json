@@ -1,15 +1,6 @@
 {
   "version": 2,
   "name": "akasha-consumer-insights",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next",
-      "config": {
-        "runtime": "nodejs18.x"
-      }
-    }
-  ],
   "routes": [
     {
       "src": "/api/(.*)",
