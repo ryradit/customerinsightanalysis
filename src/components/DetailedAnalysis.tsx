@@ -167,7 +167,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
             placeholder="Search feedback content or customer info..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500 bg-white"
           />
         </div>
 
@@ -176,7 +176,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <select
             value={selectedSentiment}
             onChange={(e) => setSelectedSentiment(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
           >
             <option value="all">All Sentiments</option>
             <option value="positive">Positive</option>
@@ -187,7 +187,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <select
             value={selectedTopic}
             onChange={(e) => setSelectedTopic(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
           >
             <option value="all">All Topics</option>
             {uniqueTopics.map(topic => (
@@ -198,7 +198,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <select
             value={selectedProduct}
             onChange={(e) => setSelectedProduct(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
           >
             <option value="all">All Products</option>
             {uniqueProducts.map(product => (
@@ -209,7 +209,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <select
             value={selectedRegion}
             onChange={(e) => setSelectedRegion(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
           >
             <option value="all">All Regions</option>
             {uniqueRegions.map(region => (
@@ -323,7 +323,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs text-blue-800 mb-1">Sentiment:</label>
-                      <select className="w-full px-2 py-1 text-sm border border-blue-200 rounded">
+                      <select className="w-full px-2 py-1 text-sm border border-blue-200 rounded text-gray-900 bg-white">
                         <option value="positive">Positive</option>
                         <option value="neutral">Neutral</option>
                         <option value="negative">Negative</option>
@@ -331,7 +331,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
                     </div>
                     <div>
                       <label className="block text-xs text-blue-800 mb-1">Priority:</label>
-                      <select className="w-full px-2 py-1 text-sm border border-blue-200 rounded">
+                      <select className="w-full px-2 py-1 text-sm border border-blue-200 rounded text-gray-900 bg-white">
                         <option value="low">Low</option>
                         <option value="medium">Medium</option>
                         <option value="high">High</option>
