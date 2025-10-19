@@ -122,7 +122,6 @@ npm run lint         # Run ESLint
 
 ### Supported Models
 - **Google Gemini** (default): Fast processing, good for general analysis
-- **OpenAI GPT**: Advanced reasoning, detailed insights
 
 ### Topic Categories
 The system classifies feedback into these categories:
@@ -236,6 +235,6 @@ For questions, issues, or feature requests:
 ## 🙏 Acknowledgments
 
 - Next.js team for the amazing framework
-- OpenAI and Google for AI model APIs
+- Google for AI model APIs
 - Chart.js for visualization capabilities
 - Tailwind CSS for styling system
