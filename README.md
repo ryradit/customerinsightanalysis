@@ -102,7 +102,7 @@ npm run lint         # Run ESLint
 - First row should contain column headers
 
 ### 2. Upload and Analyze
-- Choose your preferred AI model (Gemini or OpenAI)
+- Choose your preferred AI model (Gemini)
 - Drag and drop your Excel file or click to browse
 - Click "Analyze Customer Feedback" button
 - Wait for AI processing (typically 2-5 seconds)
