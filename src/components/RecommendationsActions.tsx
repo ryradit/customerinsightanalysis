@@ -76,188 +76,190 @@ const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result 
     
     try {
       const pdf = new jsPDF('p', 'mm', 'a4')
-    const pageWidth = pdf.internal.pageSize.width
-    const pageHeight = pdf.internal.pageSize.height
-    let yPosition = 20
+      const pageWidth = pdf.internal.pageSize.width
+      const pageHeight = pdf.internal.pageSize.height
+      let yPosition = 20
 
-    // Title Page
-    pdf.setFontSize(24)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('AKASHA INDONESIA', 20, 30)
-    
-    pdf.setFontSize(18)
-    pdf.setTextColor(0, 0, 0)
-    pdf.text('Consumer Insights Report', 20, 45)
-    
-    pdf.setFontSize(12)
-    pdf.setTextColor(100, 100, 100)
-    pdf.text(`Analysis Period: ${new Date().toLocaleDateString()}`, 20, 55)
-    pdf.text(`Total Feedback Analyzed: ${result.analysis.totalFeedback} entries`, 20, 62)
-    
-    // Add decorative line
-    pdf.setDrawColor(30, 58, 138)
-    pdf.setLineWidth(1)
-    pdf.line(20, 75, pageWidth - 20, 75)
-    
-    // Executive Summary Section
-    yPosition = 90
-    pdf.setFontSize(16)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('EXECUTIVE SUMMARY', 20, yPosition)
-    
-    yPosition += 10
-    pdf.setFontSize(10)
-    pdf.setTextColor(0, 0, 0)
-    const summaryText = result.analysis.aiSummary || "Consumer feedback analysis reveals valuable insights for strategic decision making across product lines and regional markets."
-    const summaryLines = pdf.splitTextToSize(summaryText, pageWidth - 40)
-    pdf.text(summaryLines, 20, yPosition)
-    yPosition += summaryLines.length * 5 + 15
-    
-    // Key Metrics Box
-    pdf.setFillColor(240, 248, 255)
-    pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'F')
-    pdf.setDrawColor(30, 58, 138)
-    pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'S')
-    
-    pdf.setFontSize(12)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('KEY PERFORMANCE INDICATORS', 25, yPosition + 5)
-    
-    yPosition += 12
-    pdf.setFontSize(10)
-    pdf.setTextColor(0, 0, 0)
-    
-    const positivePercent = ((result.analysis.sentimentDistribution.positive / result.analysis.totalFeedback) * 100).toFixed(1)
-    const negativePercent = ((result.analysis.sentimentDistribution.negative / result.analysis.totalFeedback) * 100).toFixed(1)
-    const highPriorityCount = result.analysis.businessRecommendations.filter(r => r.priority === 'high').length
-    
-    pdf.text(`• Positive Sentiment: ${positivePercent}% (${result.analysis.sentimentDistribution.positive} responses)`, 25, yPosition)
-    yPosition += 5
-    pdf.text(`• Negative Sentiment: ${negativePercent}% (${result.analysis.sentimentDistribution.negative} responses)`, 25, yPosition)
-    yPosition += 5
-    pdf.text(`• High Priority Actions: ${highPriorityCount} immediate recommendations`, 25, yPosition)
-    yPosition += 15
-    
-    // New Page for Detailed Analysis
-    pdf.addPage()
-    yPosition = 20
-    
-    // Sentiment Analysis Section
-    pdf.setFontSize(16)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('SENTIMENT ANALYSIS', 20, yPosition)
-    yPosition += 15
-    
-    // Create sentiment chart representation
-    const sentimentData = [
-      { label: 'Positive', value: result.analysis.sentimentDistribution.positive, color: [34, 197, 94] },
-      { label: 'Neutral', value: result.analysis.sentimentDistribution.neutral, color: [250, 204, 21] },
-      { label: 'Negative', value: result.analysis.sentimentDistribution.negative, color: [239, 68, 68] }
-    ]
-    
-    sentimentData.forEach((item, index) => {
-      const percentage = ((item.value / result.analysis.totalFeedback) * 100).toFixed(1)
-      const barWidth = (item.value / result.analysis.totalFeedback) * (pageWidth - 80)
+      // Title Page
+      pdf.setFontSize(24)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('AKASHA INDONESIA', 20, 30)
       
-      pdf.setFillColor(item.color[0], item.color[1], item.color[2])
-      pdf.rect(60, yPosition - 2, barWidth, 6, 'F')
+      pdf.setFontSize(18)
+      pdf.setTextColor(0, 0, 0)
+      pdf.text('Consumer Insights Report', 20, 45)
       
+      pdf.setFontSize(12)
+      pdf.setTextColor(100, 100, 100)
+      pdf.text(`Analysis Period: ${new Date().toLocaleDateString()}`, 20, 55)
+      pdf.text(`Total Feedback Analyzed: ${result.analysis.totalFeedback} entries`, 20, 62)
+      
+      // Add decorative line
+      pdf.setDrawColor(30, 58, 138)
+      pdf.setLineWidth(1)
+      pdf.line(20, 75, pageWidth - 20, 75)
+      
+      // Executive Summary Section
+      yPosition = 90
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('EXECUTIVE SUMMARY', 20, yPosition)
+      
+      yPosition += 10
       pdf.setFontSize(10)
       pdf.setTextColor(0, 0, 0)
-      pdf.text(`${item.label}: ${percentage}%`, 20, yPosition + 2)
-      pdf.text(`(${item.value})`, pageWidth - 40, yPosition + 2)
+      const summaryText = result.analysis.aiSummary || "Consumer feedback analysis reveals valuable insights for strategic decision making across product lines and regional markets."
+      const summaryLines = pdf.splitTextToSize(summaryText, pageWidth - 40)
+      pdf.text(summaryLines, 20, yPosition)
+      yPosition += summaryLines.length * 5 + 15
+      
+      // Key Metrics Box
+      pdf.setFillColor(240, 248, 255)
+      pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'F')
+      pdf.setDrawColor(30, 58, 138)
+      pdf.rect(20, yPosition - 5, pageWidth - 40, 35, 'S')
+      
+      pdf.setFontSize(12)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('KEY PERFORMANCE INDICATORS', 25, yPosition + 5)
       
       yPosition += 12
-    })
-    
-    yPosition += 10
-    
-    // Key Findings Section
-    pdf.setFontSize(16)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('KEY FINDINGS', 20, yPosition)
-    yPosition += 10
-    
-    result.analysis.keyFindings.slice(0, 5).forEach((finding, index) => {
-      if (yPosition > pageHeight - 20) {
-        pdf.addPage()
-        yPosition = 20
-      }
-      
       pdf.setFontSize(10)
       pdf.setTextColor(0, 0, 0)
-      pdf.text(`${index + 1}.`, 20, yPosition)
       
-      const findingLines = pdf.splitTextToSize(finding, pageWidth - 50)
-      pdf.text(findingLines, 28, yPosition)
-      yPosition += findingLines.length * 4 + 5
-    })
-    
-    // New Page for Recommendations
-    pdf.addPage()
-    yPosition = 20
-    
-    pdf.setFontSize(16)
-    pdf.setTextColor(30, 58, 138)
-    pdf.text('STRATEGIC RECOMMENDATIONS', 20, yPosition)
-    yPosition += 15
-    
-    // Priority Recommendations
-    const priorityOrder = ['high', 'medium', 'low']
-    priorityOrder.forEach(priority => {
-      const priorityRecs = result.analysis.businessRecommendations.filter(r => r.priority === priority)
-      if (priorityRecs.length === 0) return
+      const positivePercent = ((result.analysis.sentimentDistribution.positive / result.analysis.totalFeedback) * 100).toFixed(1)
+      const negativePercent = ((result.analysis.sentimentDistribution.negative / result.analysis.totalFeedback) * 100).toFixed(1)
+      const highPriorityCount = result.analysis.businessRecommendations.filter(r => r.priority === 'high').length
       
-      if (yPosition > pageHeight - 40) {
-        pdf.addPage()
-        yPosition = 20
-      }
+      pdf.text(`• Positive Sentiment: ${positivePercent}% (${result.analysis.sentimentDistribution.positive} responses)`, 25, yPosition)
+      yPosition += 5
+      pdf.text(`• Negative Sentiment: ${negativePercent}% (${result.analysis.sentimentDistribution.negative} responses)`, 25, yPosition)
+      yPosition += 5
+      pdf.text(`• High Priority Actions: ${highPriorityCount} immediate recommendations`, 25, yPosition)
+      yPosition += 15
       
-      pdf.setFontSize(14)
-      pdf.setTextColor(priority === 'high' ? 220 : priority === 'medium' ? 180 : 140, 120, 40)
-      pdf.text(`${priority.toUpperCase()} PRIORITY ACTIONS`, 20, yPosition)
+      // New Page for Detailed Analysis
+      pdf.addPage()
+      yPosition = 20
+      
+      // Sentiment Analysis Section
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('SENTIMENT ANALYSIS', 20, yPosition)
+      yPosition += 15
+      
+      // Create sentiment chart representation
+      const sentimentData = [
+        { label: 'Positive', value: result.analysis.sentimentDistribution.positive, color: [34, 197, 94] },
+        { label: 'Neutral', value: result.analysis.sentimentDistribution.neutral, color: [250, 204, 21] },
+        { label: 'Negative', value: result.analysis.sentimentDistribution.negative, color: [239, 68, 68] }
+      ]
+      
+      sentimentData.forEach((item, index) => {
+        const percentage = ((item.value / result.analysis.totalFeedback) * 100).toFixed(1)
+        const barWidth = (item.value / result.analysis.totalFeedback) * (pageWidth - 80)
+        
+        pdf.setFillColor(item.color[0], item.color[1], item.color[2])
+        pdf.rect(60, yPosition - 2, barWidth, 6, 'F')
+        
+        pdf.setFontSize(10)
+        pdf.setTextColor(0, 0, 0)
+        pdf.text(`${item.label}: ${percentage}%`, 20, yPosition + 2)
+        pdf.text(`(${item.value})`, pageWidth - 40, yPosition + 2)
+        
+        yPosition += 12
+      })
+      
       yPosition += 10
       
-      priorityRecs.slice(0, 3).forEach((rec, index) => {
-        if (yPosition > pageHeight - 30) {
+      // Key Findings Section
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('KEY FINDINGS', 20, yPosition)
+      yPosition += 10
+      
+      result.analysis.keyFindings.slice(0, 5).forEach((finding, index) => {
+        if (yPosition > pageHeight - 20) {
           pdf.addPage()
           yPosition = 20
         }
         
-        // Department badge
-        pdf.setFillColor(230, 230, 230)
-        pdf.rect(20, yPosition - 5, 40, 8, 'F')
-        pdf.setFontSize(8)
-        pdf.setTextColor(60, 60, 60)
-        pdf.text(rec.department, 22, yPosition)
-        
-        yPosition += 8
-        pdf.setFontSize(11)
+        pdf.setFontSize(10)
         pdf.setTextColor(0, 0, 0)
-        const recLines = pdf.splitTextToSize(rec.recommendation, pageWidth - 40)
-        pdf.text(recLines, 20, yPosition)
-        yPosition += recLines.length * 4 + 2
+        pdf.text(`${index + 1}.`, 20, yPosition)
         
-        pdf.setFontSize(9)
-        pdf.setTextColor(100, 100, 100)
-        pdf.text(`Impact: ${rec.impact}`, 20, yPosition)
-        yPosition += 4
-        pdf.text(`Timeframe: ${rec.timeframe} | Cost: ${rec.implementationCost}`, 20, yPosition)
-        yPosition += 10
+        const findingLines = pdf.splitTextToSize(finding, pageWidth - 50)
+        pdf.text(findingLines, 28, yPosition)
+        yPosition += findingLines.length * 4 + 5
       })
       
-      yPosition += 5
-    })
-    
-    // Footer on last page
-    pdf.setFontSize(8)
-    pdf.setTextColor(150, 150, 150)
-    pdf.text('Generated by Akasha Indonesia Consumer Insights Platform', 20, pageHeight - 10)
-    pdf.text(`Report Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, pageWidth - 60, pageHeight - 10)
-    
-    // Save the PDF
-    pdf.save(`akasha-consumer-insights-${new Date().toISOString().split('T')[0]}.pdf`)
-    
+      // New Page for Recommendations
+      pdf.addPage()
+      yPosition = 20
+      
+      pdf.setFontSize(16)
+      pdf.setTextColor(30, 58, 138)
+      pdf.text('STRATEGIC RECOMMENDATIONS', 20, yPosition)
+      yPosition += 15
+      
+      // Priority Recommendations
+      const priorityOrder = ['high', 'medium', 'low']
+      priorityOrder.forEach(priority => {
+        const priorityRecs = result.analysis.businessRecommendations.filter(r => r.priority === priority)
+        if (priorityRecs.length === 0) return
+        
+        if (yPosition > pageHeight - 40) {
+          pdf.addPage()
+          yPosition = 20
+        }
+        
+        pdf.setFontSize(14)
+        pdf.setTextColor(priority === 'high' ? 220 : priority === 'medium' ? 180 : 140, 120, 40)
+        pdf.text(`${priority.toUpperCase()} PRIORITY ACTIONS`, 20, yPosition)
+        yPosition += 10
+        
+        priorityRecs.slice(0, 3).forEach((rec, index) => {
+          if (yPosition > pageHeight - 30) {
+            pdf.addPage()
+            yPosition = 20
+          }
+          
+          // Department badge
+          pdf.setFillColor(230, 230, 230)
+          pdf.rect(20, yPosition - 5, 40, 8, 'F')
+          pdf.setFontSize(8)
+          pdf.setTextColor(60, 60, 60)
+          pdf.text(rec.department, 22, yPosition)
+          
+          yPosition += 8
+          pdf.setFontSize(11)
+          pdf.setTextColor(0, 0, 0)
+          const recLines = pdf.splitTextToSize(rec.recommendation, pageWidth - 40)
+          pdf.text(recLines, 20, yPosition)
+          yPosition += recLines.length * 4 + 2
+          
+          pdf.setFontSize(9)
+          pdf.setTextColor(100, 100, 100)
+          pdf.text(`Impact: ${rec.impact}`, 20, yPosition)
+          yPosition += 4
+          pdf.text(`Timeframe: ${rec.timeframe} | Cost: ${rec.implementationCost}`, 20, yPosition)
+          yPosition += 10
+        })
+        
+        yPosition += 5
+      })
+      
+      // Footer on last page
+      pdf.setFontSize(8)
+      pdf.setTextColor(150, 150, 150)
+      pdf.text('Generated by Akasha Indonesia Consumer Insights Platform', 20, pageHeight - 10)
+      pdf.text(`Report Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, pageWidth - 60, pageHeight - 10)
+      
+      // Save the PDF
+      pdf.save(`akasha-consumer-insights-${new Date().toISOString().split('T')[0]}.pdf`)
+      
+      console.log('PDF generated successfully')
+      
     } catch (error) {
       console.error('Error generating PDF:', error)
       alert('Failed to generate PDF report. Please try again.')
@@ -266,7 +268,76 @@ const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result 
     }
   }
 
-  const generatePDFReport = generateComprehensivePDFReport
+  const generatePDFReport = async () => {
+    setIsGeneratingPDF(true)
+    
+    try {
+      await generateComprehensivePDFReport()
+    } catch (error) {
+      console.error('Comprehensive PDF failed, trying simple version:', error)
+      
+      // Fallback simple PDF generation
+      try {
+        const pdf = new jsPDF()
+        
+        // Simple header
+        pdf.setFontSize(20)
+        pdf.text('Akasha Consumer Insights Report', 20, 30)
+        
+        pdf.setFontSize(12)
+        pdf.text(`Analysis Date: ${new Date().toLocaleDateString()}`, 20, 50)
+        pdf.text(`Total Feedback: ${result.analysis.totalFeedback}`, 20, 60)
+        
+        // Summary section
+        pdf.text('Executive Summary:', 20, 80)
+        pdf.setFontSize(10)
+        const summary = pdf.splitTextToSize(result.analysis.aiSummary || 'Consumer feedback analysis completed successfully.', 170)
+        pdf.text(summary, 20, 90)
+        
+        // Key metrics
+        let yPos = 90 + (summary.length * 5) + 20
+        pdf.setFontSize(12)
+        pdf.text('Key Metrics:', 20, yPos)
+        yPos += 10
+        
+        pdf.setFontSize(10)
+        pdf.text(`Positive: ${result.analysis.sentimentDistribution.positive} (${((result.analysis.sentimentDistribution.positive/result.analysis.totalFeedback)*100).toFixed(1)}%)`, 20, yPos)
+        yPos += 6
+        pdf.text(`Neutral: ${result.analysis.sentimentDistribution.neutral} (${((result.analysis.sentimentDistribution.neutral/result.analysis.totalFeedback)*100).toFixed(1)}%)`, 20, yPos)
+        yPos += 6
+        pdf.text(`Negative: ${result.analysis.sentimentDistribution.negative} (${((result.analysis.sentimentDistribution.negative/result.analysis.totalFeedback)*100).toFixed(1)}%)`, 20, yPos)
+        
+        // Recommendations
+        yPos += 20
+        pdf.setFontSize(12)
+        pdf.text('Top Recommendations:', 20, yPos)
+        yPos += 10
+        
+        result.analysis.businessRecommendations.slice(0, 5).forEach((rec, index) => {
+          if (yPos > 250) {
+            pdf.addPage()
+            yPos = 20
+          }
+          
+          pdf.setFontSize(10)
+          pdf.text(`${index + 1}. ${rec.department}`, 20, yPos)
+          yPos += 5
+          const recText = pdf.splitTextToSize(rec.recommendation, 170)
+          pdf.text(recText, 25, yPos)
+          yPos += recText.length * 4 + 5
+        })
+        
+        pdf.save(`akasha-insights-simple-${new Date().toISOString().split('T')[0]}.pdf`)
+        console.log('Simple PDF generated successfully')
+        
+      } catch (simpleError) {
+        console.error('Simple PDF generation also failed:', simpleError)
+        alert('Failed to generate PDF. Please check your browser and try again.')
+      }
+    } finally {
+      setIsGeneratingPDF(false)
+    }
+  }
 
   const generateManagementReport = () => {
     const reportData = {
