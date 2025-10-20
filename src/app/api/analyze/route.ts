@@ -80,7 +80,7 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
               "sentiment": "positive|neutral|negative",
               "sentimentScore": -1.0 to 1.0,
               "topics": ["topic1", "topic2"],
-              "keyPhrases": ["phrase1", "phrase2"],
+              "keyPhrases": ["important phrase 1", "key phrase 2", "notable phrase 3"],
               "priority": "high|medium|low"
             }
           ]
@@ -94,7 +94,13 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         - Regions mentioned: ${regionData.slice(0, 10).join(', ')}
         - Categories: ${categoryData.slice(0, 10).join(', ')}
         
-        Analyze each feedback for sentiment, extract key topics (taste, quality, price, packaging, availability, promotion, service, brand), and provide actionable business insights for FMCG operations in Indonesia.
+        Analyze each feedback for sentiment, extract key topics (taste, quality, price, packaging, availability, promotion, service, brand), identify important key phrases (meaningful 2-4 word phrases that capture consumer sentiment), and provide actionable business insights for FMCG operations in Indonesia.
+        
+        For keyPhrases, extract meaningful phrases like:
+        - "rasa enak", "sangat suka", "kualitas bagus" (Indonesian)
+        - "taste good", "love it", "highly recommend" (English)
+        - "harga terjangkau", "sulit ditemukan", "kemasan bagus"
+        - "akan beli lagi", "tidak suka", "mengecewakan"
       `
 
       console.log('Starting comprehensive Gemini analysis...')
@@ -225,11 +231,46 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         if (text.includes('kemasan') || text.includes('packaging') || text.includes('bungkus')) topics.push('packaging')
         if (!topics.length) topics.push('general')
         
-        // Key phrases extraction
+        // Enhanced key phrases extraction
         const keyPhrases: string[] = []
-        if (text.includes('rasa enak')) keyPhrases.push('rasa enak')
-        if (text.includes('kualitas bagus')) keyPhrases.push('kualitas bagus')
-        if (text.includes('harga terjangkau')) keyPhrases.push('harga terjangkau')
+        
+        // Indonesian phrases
+        if (text.includes('rasa enak') || text.includes('enak sekali')) keyPhrases.push('rasa enak')
+        if (text.includes('kualitas bagus') || text.includes('kualitas baik')) keyPhrases.push('kualitas bagus')
+        if (text.includes('harga terjangkau') || text.includes('harga murah')) keyPhrases.push('harga terjangkau')
+        if (text.includes('sangat suka') || text.includes('suka banget')) keyPhrases.push('sangat suka')
+        if (text.includes('tidak suka') || text.includes('kurang suka')) keyPhrases.push('tidak suka')
+        if (text.includes('kemasan bagus') || text.includes('packaging bagus')) keyPhrases.push('kemasan bagus')
+        if (text.includes('sulit ditemukan') || text.includes('susah dicari')) keyPhrases.push('sulit ditemukan')
+        if (text.includes('pelayanan baik') || text.includes('service bagus')) keyPhrases.push('pelayanan baik')
+        if (text.includes('recommended') || text.includes('direkomendasikan')) keyPhrases.push('recommended')
+        if (text.includes('mengecewakan') || text.includes('disappointing')) keyPhrases.push('mengecewakan')
+        
+        // English phrases
+        if (text.includes('taste good') || text.includes('delicious')) keyPhrases.push('taste good')
+        if (text.includes('good quality') || text.includes('high quality')) keyPhrases.push('good quality')
+        if (text.includes('affordable') || text.includes('reasonable price')) keyPhrases.push('affordable')
+        if (text.includes('love it') || text.includes('really like')) keyPhrases.push('love it')
+        if (text.includes('dont like') || text.includes("don't like")) keyPhrases.push("don't like")
+        if (text.includes('good packaging') || text.includes('nice package')) keyPhrases.push('good packaging')
+        if (text.includes('hard to find') || text.includes('not available')) keyPhrases.push('hard to find')
+        if (text.includes('good service') || text.includes('excellent service')) keyPhrases.push('good service')
+        if (text.includes('highly recommend') || text.includes('must try')) keyPhrases.push('highly recommend')
+        if (text.includes('disappointing') || text.includes('not satisfied')) keyPhrases.push('disappointing')
+        
+        // Product-specific phrases
+        if (text.includes('rasa original') || text.includes('original flavor')) keyPhrases.push('rasa original')
+        if (text.includes('varian baru') || text.includes('new variant')) keyPhrases.push('varian baru')
+        if (text.includes('porsi kecil') || text.includes('small portion')) keyPhrases.push('porsi kecil')
+        if (text.includes('porsi besar') || text.includes('big portion')) keyPhrases.push('porsi besar')
+        if (text.includes('expired') || text.includes('kadaluarsa')) keyPhrases.push('expired')
+        if (text.includes('fresh') || text.includes('segar')) keyPhrases.push('fresh')
+        
+        // Sentiment-specific phrases
+        if (text.includes('akan beli lagi') || text.includes('will buy again')) keyPhrases.push('akan beli lagi')
+        if (text.includes('tidak akan beli') || text.includes('wont buy again')) keyPhrases.push('tidak akan beli')
+        if (text.includes('best seller') || text.includes('terbaik')) keyPhrases.push('best seller')
+        if (text.includes('worst') || text.includes('terburuk')) keyPhrases.push('worst')
         
         return {
           ...feedback,
