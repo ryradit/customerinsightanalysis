@@ -152,12 +152,19 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <p className="text-gray-600 mt-2">
             Explore individual feedback entries with AI-powered classification and sentiment analysis
           </p>
-          {/* Debug Info - Remove in production */}
-          <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
-            <strong>Debug:</strong> Total: {result.analysis.totalFeedback}, 
-            Positive: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'positive').length}, 
-            Neutral: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'neutral').length}, 
-            Negative: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'negative').length}
+          {/* Sentiment Distribution Info */}
+          <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-green-700 font-medium">
+                ✅ Positive: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'positive').length}
+              </span>
+              <span className="text-gray-700 font-medium">
+                ➖ Neutral: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'neutral').length}
+              </span>
+              <span className="text-red-700 font-medium">
+                ❌ Negative: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'negative').length}
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-3">

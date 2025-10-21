@@ -389,15 +389,20 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
       let aiSentiment: 'positive' | 'neutral' | 'negative' = 'neutral'
       let sentimentScore = 0
       
-      // Check if sentiment is already provided in data
-      if (feedback.sentiment) {
-        const sentiment = feedback.sentiment.toString().toLowerCase()
-        if (sentiment.includes('positive') || sentiment.includes('positif') || sentiment.includes('good') || sentiment.includes('bagus')) {
+      // Check if sentiment is already provided in data - prioritize explicit sentiment columns
+      if (feedback.sentiment && feedback.sentiment.toString().trim().length > 0) {
+        const sentiment = feedback.sentiment.toString().toLowerCase().trim()
+        console.log(`Found sentiment column value: "${sentiment}" for feedback: "${feedback.feedback.substring(0, 50)}..."`)
+        
+        if (sentiment.includes('positive') || sentiment.includes('positif') || sentiment.includes('good') || sentiment.includes('bagus') || sentiment === '1') {
           aiSentiment = 'positive'
           sentimentScore = 0.7
-        } else if (sentiment.includes('negative') || sentiment.includes('negatif') || sentiment.includes('bad') || sentiment.includes('buruk')) {
+        } else if (sentiment.includes('negative') || sentiment.includes('negatif') || sentiment.includes('bad') || sentiment.includes('buruk') || sentiment === '-1' || sentiment === '0') {
           aiSentiment = 'negative'
           sentimentScore = -0.7
+        } else if (sentiment.includes('neutral') || sentiment.includes('netral') || sentiment === '2') {
+          aiSentiment = 'neutral'
+          sentimentScore = 0
         }
       } else {
         // Comprehensive sentiment analysis with enhanced negative detection
@@ -429,7 +434,10 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
           'lebih buruk', 'terburuk', 'benci', 'tidak suka', 'hindari', 'tidak pernah', 'sulit',
           'susah', 'repot', 'ribet', 'merepotkan', 'mengganggu', 'khawatir', 'ragu', 'tidak nyaman',
           'tidak cocok', 'tidak tepat', 'tidak sesuai', 'tidak lengkap', 'tidak sempurna', 'lemah',
-          'rapuh', 'retak', 'sobek', 'kotor', 'lama', 'jadul', 'kuno', 'bingung', 'ribet'
+          'rapuh', 'retak', 'sobek', 'kotor', 'lama', 'jadul', 'kuno', 'bingung', 'ribet',
+          // More sensitive negative detection
+          'not good', 'not great', 'not satisfied', 'could be better', 'needs improvement', 'below expectation',
+          'tidak bagus', 'tidak baik', 'kurang memuaskan', 'bisa lebih baik', 'perlu diperbaiki', 'di bawah harapan'
         ]
         
         const functionalIssues = [
@@ -505,7 +513,7 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         if (lowSatisfaction) negativeScore += 3
         
         // Medium negative indicators (more sensitive)
-        if (negativeWords.some(word => text.includes(word))) negativeScore += 2 // Increased from 1
+        if (negativeWords.some(word => text.includes(word))) negativeScore += 3 // Increased further for better detection
         if (qualityIssues.some(word => text.includes(word))) negativeScore += 3
         if (serviceIssues.some(word => text.includes(word))) negativeScore += 3
         if (deliveryIssues.some(word => text.includes(word))) negativeScore += 3
@@ -621,19 +629,16 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         if (text.includes('impressed') || text.includes('terkesan') || text.includes('kagum')) positiveScore += 2
         if (text.includes('surprised') && text.includes('good') || text.includes('terkejut') && text.includes('bagus')) positiveScore += 2
         
-        // Balanced sentiment detection with enhanced positive patterns
-        if (positiveScore >= 4) { // Strong positive indicators take priority
+        // More aggressive negative detection - prioritize negative feedback
+        if (negativeScore >= 1 || hasLowRating || lowSatisfaction) { // Lower threshold for negative detection
+          aiSentiment = 'negative'
+          sentimentScore = Math.min(-0.3, -0.15 * negativeScore)
+        } else if (positiveScore >= 4) { // Strong positive indicators
           aiSentiment = 'positive'
           sentimentScore = Math.min(0.9, 0.15 * positiveScore)
-        } else if (negativeScore >= 2 || hasLowRating || lowSatisfaction) { // Negative detection
-          aiSentiment = 'negative'
-          sentimentScore = Math.min(-0.3, -0.1 * negativeScore)
         } else if (positiveScore >= 2) { // Medium positive threshold
           aiSentiment = 'positive'
           sentimentScore = Math.min(0.8, 0.2 * positiveScore)
-        } else if (negativeScore >= 1) { // Lower negative threshold
-          aiSentiment = 'negative'
-          sentimentScore = -0.4
         } else if (positiveScore > 0) { // Any positive indicator
           aiSentiment = 'positive'
           sentimentScore = Math.max(0.2, 0.1 * positiveScore)
@@ -694,12 +699,21 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
       // First check if sentiment column exists in data
       let positive = 0, negative = 0, neutral = 0
       data.forEach(item => {
-        // Check if sentiment is already provided in data
-        if (item.sentiment) {
-          const sentiment = item.sentiment.toString().toLowerCase()
-          if (sentiment.includes('positive') || sentiment.includes('positif') || sentiment.includes('good') || sentiment.includes('bagus')) positive++
-          else if (sentiment.includes('negative') || sentiment.includes('negatif') || sentiment.includes('bad') || sentiment.includes('buruk')) negative++
-          else neutral++
+        // Check if sentiment is already provided in data - more comprehensive matching
+        if (item.sentiment && item.sentiment.toString().trim().length > 0) {
+          const sentiment = item.sentiment.toString().toLowerCase().trim()
+          
+          if (sentiment.includes('positive') || sentiment.includes('positif') || sentiment.includes('good') || sentiment.includes('bagus') || sentiment === '1' || sentiment === 'pos') {
+            positive++
+          } else if (sentiment.includes('negative') || sentiment.includes('negatif') || sentiment.includes('bad') || sentiment.includes('buruk') || sentiment === '-1' || sentiment === '0' || sentiment === 'neg') {
+            negative++
+          } else if (sentiment.includes('neutral') || sentiment.includes('netral') || sentiment === '2' || sentiment === 'neu') {
+            neutral++
+          } else {
+            // If sentiment column exists but doesn't match patterns, analyze text
+            console.log(`Unknown sentiment value: "${sentiment}" - analyzing text instead`)
+            neutral++ // Default to neutral for unknown values
+          }
         } else {
           // Enhanced keyword analysis for better negative detection
           const text = item.feedback.toLowerCase()
@@ -725,7 +739,10 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
             'worse', 'worst', 'sucks', 'hate', 'dislike', 'avoid', 'never', 'difficult', 'hard', 'trouble',
             'uncomfortable', 'unacceptable', 'inappropriate', 'incorrect', 'inadequate', 'insufficient', 
             'incomplete', 'imperfect', 'inferior', 'unpleasant', 'unreliable', 'unstable', 'confusing',
-            'lebih buruk', 'terburuk', 'benci', 'tidak suka', 'hindari', 'tidak pernah', 'sulit', 'susah'
+            'lebih buruk', 'terburuk', 'benci', 'tidak suka', 'hindari', 'tidak pernah', 'sulit', 'susah',
+            // More sensitive negative detection patterns
+            'not good', 'not great', 'not satisfied', 'could be better', 'needs improvement', 'below expectation',
+            'tidak bagus', 'tidak baik', 'kurang memuaskan', 'bisa lebih baik', 'perlu diperbaiki', 'di bawah harapan'
           ]
           
           const functionalIssues = [
@@ -800,7 +817,7 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
           if (lowSatisfaction) negativeScore += 3
           
           // Medium indicators (increased sensitivity)
-          if (negativeWords.some(word => text.includes(word))) negativeScore += 2 // Increased from 1
+          if (negativeWords.some(word => text.includes(word))) negativeScore += 3 // Increased further for better detection
           if (qualityIssues.some(word => text.includes(word))) negativeScore += 3
           if (serviceIssues.some(word => text.includes(word))) negativeScore += 3
           if (negationPatterns.some(word => text.includes(word))) negativeScore += 3
@@ -824,15 +841,13 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
           if (text.includes('trust') || text.includes('percaya') || text.includes('yakin')) positiveScore += 2
           if (text.includes('repeat') || text.includes('again') || text.includes('lagi')) positiveScore += 2
           
-          // Balanced detection with enhanced positive patterns
-          if (positiveScore >= 4) { // Strong positive takes priority
-            positive++
-          } else if (negativeScore >= 2 || hasLowRating || lowSatisfaction) { // Negative detection
+          // More aggressive negative detection - prioritize detecting complaints
+          if (negativeScore >= 1 || hasLowRating || lowSatisfaction) { // Lower threshold for negative
             negative++
+          } else if (positiveScore >= 4) { // Strong positive takes priority
+            positive++
           } else if (positiveScore >= 2) { // Medium positive threshold
             positive++
-          } else if (negativeScore >= 1) { // Lower negative threshold
-            negative++
           } else if (positiveScore > 0) { // Any positive indicator
             positive++
           } else {
@@ -1243,13 +1258,26 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
     negative: individualFeedback.filter(f => f.aiSentiment === 'negative').length
   }
   
-  // Debug logging to help understand detection
+  // Enhanced debug logging to help understand detection
   console.log('=== SENTIMENT DETECTION DEBUG ===')
   console.log('Total feedback entries:', totalFeedback)
   console.log('Final sentiment distribution:', finalSentimentDistribution)
-  console.log('Individual feedback sample (first 3 negative):')
-  individualFeedback.filter(f => f.aiSentiment === 'negative').slice(0, 3).forEach((f, i) => {
-    console.log(`${i + 1}. "${f.feedback}" -> ${f.aiSentiment} (score: ${f.sentimentScore})`)
+  console.log('Percentage negative:', ((finalSentimentDistribution.negative / totalFeedback) * 100).toFixed(1) + '%')
+  
+  // Log first few examples of each sentiment
+  console.log('\n--- NEGATIVE EXAMPLES ---')
+  individualFeedback.filter(f => f.aiSentiment === 'negative').slice(0, 5).forEach((f, i) => {
+    console.log(`${i + 1}. "${f.feedback.substring(0, 100)}..." -> ${f.aiSentiment} (score: ${f.sentimentScore})`)
+  })
+  
+  console.log('\n--- POSITIVE EXAMPLES ---')
+  individualFeedback.filter(f => f.aiSentiment === 'positive').slice(0, 3).forEach((f, i) => {
+    console.log(`${i + 1}. "${f.feedback.substring(0, 100)}..." -> ${f.aiSentiment} (score: ${f.sentimentScore})`)
+  })
+  
+  console.log('\n--- NEUTRAL EXAMPLES ---')
+  individualFeedback.filter(f => f.aiSentiment === 'neutral').slice(0, 3).forEach((f, i) => {
+    console.log(`${i + 1}. "${f.feedback.substring(0, 100)}..." -> ${f.aiSentiment} (score: ${f.sentimentScore})`)
   })
   console.log('===================================')
 
