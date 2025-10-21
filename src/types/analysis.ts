@@ -10,6 +10,39 @@ export interface AnalysisResult {
     topicDistribution: {
       [key: string]: number
     }
+    issueAnalysis?: {
+      [key: string]: number
+    }
+    negativePatterns?: Array<{
+      pattern: string
+      count: number
+      severity: string
+      examples: string[]
+      mitigation?: {
+        immediate_actions: string[]
+        long_term_solutions: string[]
+        prevention_measures: string[]
+      }
+    }>
+    mitigationStrategies?: {
+      immediate_response: Array<{
+        issue_type: string
+        strategy: string
+        timeline: string
+        responsible_team: string
+      }>
+      improvement_initiatives: Array<{
+        focus_area: string
+        initiative: string
+        expected_impact: string
+        investment_required: string
+      }>
+      positive_reinforcement: Array<{
+        strength: string
+        amplification_strategy: string
+        marketing_opportunity: string
+      }>
+    }
     regionalDistribution?: {
       [key: string]: number
     }
@@ -63,7 +96,9 @@ export interface FeedbackData {
   rating?: number
   channel?: string
   topics?: string[]
-  sentiment?: 'positive' | 'neutral' | 'negative'
+  sentiment?: 'positive' | 'neutral' | 'negative' | string
+  issue?: string
+  satisfaction?: string
 }
 
 export interface ColumnMapping {

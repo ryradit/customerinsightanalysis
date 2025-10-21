@@ -6,6 +6,7 @@ import UploadOverview from '@/components/UploadOverview'
 import InsightsDashboard from '@/components/InsightsDashboard'
 import DetailedAnalysis from '@/components/DetailedAnalysis'
 import RecommendationsActions from '@/components/RecommendationsActions'
+import LoadingProgress from '@/components/LoadingProgress'
 import { AnalysisResult, FilePreview } from '@/types/analysis'
 
 type TabType = 'upload' | 'insights' | 'detailed' | 'recommendations'
@@ -48,6 +49,11 @@ export default function Home() {
     } finally {
       setIsAnalyzing(false)
     }
+  }
+
+  const handleProgressComplete = () => {
+    // The progress component completes automatically
+    // No additional action needed as analysis is handled in handleFileAnalysis
   }
 
   const handleReset = () => {
@@ -130,6 +136,13 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {renderTabContent()}
       </main>
+
+      {/* Loading Progress */}
+      <LoadingProgress 
+        isVisible={isAnalyzing} 
+        onComplete={handleProgressComplete}
+        dataSize={filePreview?.totalRows || 1000}
+      />
     </div>
   )
 }

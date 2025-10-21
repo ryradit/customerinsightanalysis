@@ -22,23 +22,27 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
   const uniqueProducts = useMemo(() => {
     const products = result.analysis.individualFeedback
       .map(f => f.product)
-      .filter(Boolean)
+      .filter(product => product && product.trim().length > 0)
       .filter((value, index, self) => self.indexOf(value) === index)
+      .sort()
     return products
   }, [result.analysis.individualFeedback])
 
   const uniqueRegions = useMemo(() => {
     const regions = result.analysis.individualFeedback
       .map(f => f.region)
-      .filter(Boolean)
+      .filter(region => region && region.trim().length > 0)
       .filter((value, index, self) => self.indexOf(value) === index)
+      .sort()
     return regions
   }, [result.analysis.individualFeedback])
 
   const uniqueTopics = useMemo(() => {
     const allTopics = result.analysis.individualFeedback
       .flatMap(f => f.aiTopics || [])
+      .filter(topic => topic && topic.trim().length > 0)
       .filter((value, index, self) => self.indexOf(value) === index)
+      .sort()
     return allTopics
   }, [result.analysis.individualFeedback])
 
@@ -49,9 +53,21 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
         feedback.feedback.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (feedback.customerInfo && feedback.customerInfo.toLowerCase().includes(searchTerm.toLowerCase()))
 
-      const matchesSentiment = selectedSentiment === 'all' || feedback.aiSentiment === selectedSentiment
-      const matchesProduct = selectedProduct === 'all' || feedback.product === selectedProduct
-      const matchesRegion = selectedRegion === 'all' || feedback.region === selectedRegion
+      // More flexible sentiment matching to handle potential issues
+      const feedbackSentiment = feedback.aiSentiment || feedback.sentiment || 'neutral'
+      const matchesSentiment = selectedSentiment === 'all' || feedbackSentiment === selectedSentiment
+      
+      // Better product matching with null/empty handling
+      const matchesProduct = selectedProduct === 'all' || 
+        (selectedProduct === '' && (!feedback.product || feedback.product.trim() === '')) ||
+        (feedback.product && feedback.product === selectedProduct)
+      
+      // Better region matching with null/empty handling  
+      const matchesRegion = selectedRegion === 'all' || 
+        (selectedRegion === '' && (!feedback.region || feedback.region.trim() === '')) ||
+        (feedback.region && feedback.region === selectedRegion)
+        
+      // Better topic matching
       const matchesTopic = selectedTopic === 'all' || 
         (feedback.aiTopics && feedback.aiTopics.includes(selectedTopic))
 
@@ -67,7 +83,9 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
   )
 
   const getSentimentBadge = (sentiment: string) => {
-    switch (sentiment) {
+    // Handle both aiSentiment and sentiment fields
+    const actualSentiment = sentiment || 'neutral'
+    switch (actualSentiment) {
       case 'positive':
         return 'bg-green-100 text-green-800'
       case 'negative':
@@ -134,6 +152,13 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
           <p className="text-gray-600 mt-2">
             Explore individual feedback entries with AI-powered classification and sentiment analysis
           </p>
+          {/* Debug Info - Remove in production */}
+          <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
+            <strong>Debug:</strong> Total: {result.analysis.totalFeedback}, 
+            Positive: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'positive').length}, 
+            Neutral: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'neutral').length}, 
+            Negative: {result.analysis.individualFeedback.filter(f => (f.aiSentiment || f.sentiment) === 'negative').length}
+          </div>
         </div>
         <div className="flex items-center space-x-3">
           <span className="text-sm text-gray-500">
@@ -204,6 +229,9 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
             {uniqueProducts.map(product => (
               <option key={product} value={product}>{product}</option>
             ))}
+            {result.analysis.individualFeedback.some(f => !f.product || f.product.trim() === '') && (
+              <option value="">No Product Specified</option>
+            )}
           </select>
 
           <select
@@ -215,6 +243,9 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
             {uniqueRegions.map(region => (
               <option key={region} value={region}>{region}</option>
             ))}
+            {result.analysis.individualFeedback.some(f => !f.region || f.region.trim() === '') && (
+              <option value="">No Region Specified</option>
+            )}
           </select>
 
           <div className="text-sm text-gray-600 flex items-center">
@@ -232,8 +263,8 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ result }) => {
                 <span className="text-sm font-medium text-gray-500">
                   #{(currentPage - 1) * itemsPerPage + index + 1}
                 </span>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSentimentBadge(feedback.aiSentiment)}`}>
-                  {feedback.aiSentiment}
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSentimentBadge(feedback.aiSentiment || feedback.sentiment)}`}>
+                  {feedback.aiSentiment || feedback.sentiment || 'neutral'}
                 </span>
                 {feedback.priority && (
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadge(feedback.priority)}`}>
