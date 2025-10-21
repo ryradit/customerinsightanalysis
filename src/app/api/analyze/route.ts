@@ -411,11 +411,65 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         const satisfaction = feedback.satisfaction?.toString().toLowerCase() || ''
         const rating = feedback.rating ? parseInt(feedback.rating.toString()) : null
         
-        // Comprehensive negative indicators
+        // Enhanced comprehensive sentiment indicators
         const strongNegatives = [
+          // English extreme negatives
           'terrible', 'awful', 'horrible', 'worst', 'hate', 'broken', 'defective', 'useless', 'garbage', 'scam',
-          'disgusting', 'pathetic', 'nightmare', 'disaster', 'catastrophe', 'appalling', 'atrocious',
-          'mengerikan', 'sangat buruk', 'parah', 'jelek banget', 'kacau', 'hancur', 'rusak total'
+          'disgusting', 'pathetic', 'nightmare', 'disaster', 'catastrophe', 'appalling', 'atrocious', 'revolting',
+          'abysmal', 'dreadful', 'deplorable', 'horrendous', 'hideous', 'repulsive', 'vile', 'wretched',
+          'abominable', 'detestable', 'loathsome', 'odious', 'contemptible', 'despicable', 'heinous',
+          // Indonesian extreme negatives
+          'mengerikan', 'sangat buruk', 'parah', 'jelek banget', 'kacau', 'hancur', 'rusak total',
+          'menjijikkan', 'menyebalkan', 'sangat mengecewakan', 'benar-benar buruk', 'parah banget',
+          'ngaco banget', 'zonk', 'bohong', 'tipu-tipu', 'penipu', 'sampah banget', 'fatal'
+        ]
+
+        // Strong positive indicators
+        const strongPositives = [
+          // English strong positives
+          'amazing', 'awesome', 'excellent', 'outstanding', 'superb', 'fantastic', 'wonderful', 'brilliant',
+          'incredible', 'magnificent', 'spectacular', 'phenomenal', 'exceptional', 'remarkable', 'marvelous',
+          'fabulous', 'terrific', 'gorgeous', 'stunning', 'breathtaking', 'mind-blowing', 'world-class',
+          'top-notch', 'first-class', 'premium', 'luxury', 'perfect', 'flawless', 'impeccable', 'divine',
+          // Indonesian strong positives  
+          'luar biasa', 'hebat banget', 'keren abis', 'mantap jiwa', 'top banget', 'juara', 'terbaik',
+          'sempurna', 'istimewa', 'menakjubkan', 'fantastis', 'spektakuler', 'dahsyat', 'mengagumkan',
+          'sangat memuaskan', 'benar-benar bagus', 'kualitas premium', 'worth it banget', 'recommended banget'
+        ]
+
+        // Enhanced positive detection patterns
+        const positiveWords = [
+          // Basic positive words
+          'good', 'great', 'nice', 'fine', 'okay', 'pleasant', 'enjoyable', 'satisfying', 'decent', 'solid',
+          'bagus', 'baik', 'oke', 'lumayan', 'cukup', 'tidak buruk', 'menyenangkan', 'memuaskan',
+          
+          // Quality praise
+          'quality', 'fresh', 'delicious', 'tasty', 'flavorful', 'crispy', 'smooth', 'soft', 'tender',
+          'berkualitas', 'segar', 'enak', 'lezat', 'gurih', 'renyah', 'halus', 'lembut', 'empuk',
+          
+          // Experience positive
+          'satisfied', 'happy', 'pleased', 'content', 'glad', 'comfortable', 'convenient', 'easy',
+          'puas', 'senang', 'suka', 'gembira', 'nyaman', 'mudah', 'praktis', 'lancar',
+          
+          // Value positive
+          'worth it', 'affordable', 'reasonable', 'fair price', 'good value', 'cheap', 'economical',
+          'worth', 'sebanding', 'murah', 'terjangkau', 'pas', 'hemat', 'ekonomis', 'sesuai harga',
+          
+          // Recommendation positive
+          'recommend', 'suggest', 'advise', 'endorse', 'approve', 'support', 'back', 'vouch',
+          'rekomendasikan', 'sarankan', 'anjurkan', 'dukung', 'setuju', 'referensikan'
+        ]
+
+        // Contextual positive phrases
+        const positiveExperience = [
+          'love it', 'love this', 'really like', 'quite good', 'pretty good', 'fairly good', 'rather good',
+          'suka banget', 'cinta ini', 'doyan banget', 'ketagihan', 'nagih', 'bikin ketagihan'
+        ]
+
+        // Loyalty and repeat purchase indicators
+        const loyaltyIndicators = [
+          'will buy again', 'buying again', 'repeat purchase', 'loyal customer', 'regular customer',
+          'beli lagi', 'langganan', 'pelanggan setia', 'repeat order', 'order lagi'
         ]
         
         const negativeWords = [
@@ -482,14 +536,6 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
           'jangan beli', 'hindari', 'tidak recommend', 'tidak cocok', 'tidak sesuai'
         ]
         
-        // Positive indicators (for balance)
-        const positiveWords = [
-          'good', 'great', 'excellent', 'amazing', 'love', 'perfect', 'awesome', 'fantastic', 'wonderful',
-          'satisfied', 'happy', 'pleased', 'impressed', 'outstanding', 'superb', 'brilliant', 'incredible',
-          'bagus', 'hebat', 'luar biasa', 'sempurna', 'puas', 'senang', 'suka', 'keren', 'mantap',
-          'recommended', 'highly recommend', 'worth it', 'value for money', 'excellent quality'
-        ]
-        
         // Check ratings (1-2 = negative, 4-5 = positive)
         const hasLowRating = rating !== null && rating <= 2
         const hasHighRating = rating !== null && rating >= 4
@@ -535,23 +581,6 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
         // Check for caps (might indicate frustration)
         if (text.toUpperCase() === text && text.length > 10) negativeScore += 1
         
-        // Comprehensive positive patterns
-        const strongPositives = [
-          'excellent', 'outstanding', 'exceptional', 'amazing', 'incredible', 'fantastic', 'wonderful', 'brilliant',
-          'superb', 'magnificent', 'marvelous', 'spectacular', 'phenomenal', 'extraordinary', 'remarkable',
-          'flawless', 'perfect', 'ideal', 'ultimate', 'premium', 'top-notch', 'first-class', 'world-class',
-          'luar biasa', 'hebat sekali', 'sempurna', 'istimewa', 'menakjubkan', 'fantastis', 'terbaik',
-          'sangat bagus', 'keren banget', 'mantap sekali', 'top markotop', 'juara', 'the best'
-        ]
-        
-        const positiveExperience = [
-          'love it', 'love this', 'absolutely love', 'totally satisfied', 'completely happy', 'thrilled',
-          'delighted', 'impressed', 'blown away', 'exceeded expectations', 'beyond expectations',
-          'couldn\'t be happier', 'extremely pleased', 'highly satisfied', 'very happy', 'so happy',
-          'suka banget', 'cinta banget', 'puas banget', 'senang sekali', 'sangat puas', 'terkesan',
-          'melebihi ekspektasi', 'sangat senang', 'bahagia banget', 'tidak menyesal'
-        ]
-        
         const qualityPraise = [
           'excellent quality', 'superb quality', 'premium quality', 'top quality', 'high quality',
           'great craftsmanship', 'well made', 'solid build', 'durable', 'long lasting', 'reliable',
@@ -593,59 +622,87 @@ async function analyzeWithGemini(feedbackData: FeedbackData[]): Promise<Analysis
           'god bless', 'bless you', 'blessed', 'syukur', 'alhamdulillah', 'berterima kasih'
         ]
         
-        const loyaltyIndicators = [
-          'loyal customer', 'been using for', 'years of use', 'always buy', 'regular customer',
-          'trust this brand', 'faithful user', 'long time user', 'pelanggan setia', 'langganan',
-          'sudah lama pakai', 'selalu beli', 'percaya sama brand', 'dari dulu pakai'
-        ]
-        
-        // Calculate comprehensive positive score
+        // Calculate comprehensive positive score using enhanced patterns
         let positiveScore = 0
         
-        // Strong positive indicators (high weight)
-        if (strongPositives.some(word => text.includes(word))) positiveScore += 5
-        if (positiveExperience.some(word => text.includes(word))) positiveScore += 4
+        // Strong positive indicators (highest weight)
+        if (strongPositives.some(word => text.includes(word))) positiveScore += 6
+        if (positiveExperience.some(word => text.includes(word))) positiveScore += 5
         if (hasHighRating) positiveScore += 4
         if (highSatisfaction) positiveScore += 4
         
-        // Quality and experience praise (medium-high weight)
-        if (qualityPraise.some(word => text.includes(word))) positiveScore += 3
-        if (performancePraise.some(word => text.includes(word))) positiveScore += 3
-        if (servicePraise.some(word => text.includes(word))) positiveScore += 3
-        if (valuePraise.some(word => text.includes(word))) positiveScore += 3
+        // Basic positive words with contextual boosting
+        const basicPositiveCount = positiveWords.filter(word => text.includes(word)).length
+        positiveScore += Math.min(basicPositiveCount * 2, 8) // Cap at 8 points for multiple positives
         
-        // Recommendations and loyalty (medium weight)
-        if (recommendationPhrases.some(word => text.includes(word))) positiveScore += 3
-        if (loyaltyIndicators.some(word => text.includes(word))) positiveScore += 2
+        // Loyalty and repeat purchase indicators
+        if (loyaltyIndicators.some(word => text.includes(word))) positiveScore += 3
         if (gratitudePhrases.some(word => text.includes(word))) positiveScore += 2
         
-        // Basic positive words (lower weight but still important)
-        if (positiveWords.some(word => text.includes(word))) positiveScore += 1
+        // Contextual positive boosters
+        if (text.includes('recommend') && !text.includes('not recommend') && !text.includes('wouldn\'t recommend')) positiveScore += 3
         
-        // Additional positive context clues
+        // Additional positive context clues and emotional indicators
         if (text.includes('five star') || text.includes('5 star') || text.includes('bintang 5')) positiveScore += 3
         if (text.includes('best') || text.includes('terbaik') || text.includes('nomor satu')) positiveScore += 2
         if (text.includes('satisfied') || text.includes('puas') || text.includes('happy') || text.includes('senang')) positiveScore += 2
         if (text.includes('impressed') || text.includes('terkesan') || text.includes('kagum')) positiveScore += 2
         if (text.includes('surprised') && text.includes('good') || text.includes('terkejut') && text.includes('bagus')) positiveScore += 2
         
-        // More aggressive negative detection - prioritize negative feedback
-        if (negativeScore >= 1 || hasLowRating || lowSatisfaction) { // Lower threshold for negative detection
+        // Emotional positive indicators
+        if (text.includes('love') || text.includes('adore') || text.includes('cinta') || text.includes('suka banget')) positiveScore += 3
+        if (text.includes('amazing') || text.includes('wow') || text.includes('incredible') || text.includes('luar biasa')) positiveScore += 3
+        
+        // Purchase intention indicators  
+        if (text.includes('will buy again') || text.includes('beli lagi') || text.includes('repeat purchase')) positiveScore += 3
+        if (text.includes('definitely recommend') || text.includes('highly recommend') || text.includes('strongly recommend')) positiveScore += 3
+        
+        // Negative emotional indicators
+        if (text.includes('hate') || text.includes('disgusting') || text.includes('awful') || text.includes('benci')) negativeScore += 4
+        if (text.includes('never again') || text.includes('worst') || text.includes('terrible') || text.includes('tidak lagi')) negativeScore += 4
+        if (text.includes('disappointed') || text.includes('frustrated') || text.includes('kecewa') || text.includes('kesal')) negativeScore += 2
+        
+        // Contextual negative phrases
+        if (text.includes('waste of money') || text.includes('buang-buang uang') || text.includes('not worth')) negativeScore += 3
+        if (text.includes('poor quality') || text.includes('kualitas buruk') || text.includes('cheap quality')) negativeScore += 3
+        
+        // Enhanced sentiment classification with balanced approach
+        const scoreDifference = positiveScore - negativeScore
+        
+        // Strong negative detection (prioritize complaints and issues)
+        if (negativeScore >= 5 || (negativeScore >= 3 && positiveScore <= 2)) {
           aiSentiment = 'negative'
-          sentimentScore = Math.min(-0.3, -0.15 * negativeScore)
-        } else if (positiveScore >= 4) { // Strong positive indicators
+          sentimentScore = Math.max(-0.9, -0.1 * negativeScore)
+        }
+        // Clear negative feedback 
+        else if (negativeScore >= 1 && scoreDifference <= -1) {
+          aiSentiment = 'negative'
+          sentimentScore = Math.max(-0.7, -0.15 * negativeScore)
+        }
+        // Strong positive detection
+        else if (positiveScore >= 8 || (positiveScore >= 5 && negativeScore === 0)) {
           aiSentiment = 'positive'
-          sentimentScore = Math.min(0.9, 0.15 * positiveScore)
-        } else if (positiveScore >= 2) { // Medium positive threshold
+          sentimentScore = Math.min(0.9, 0.1 * positiveScore)
+        }
+        // Clear positive feedback
+        else if (positiveScore >= 3 && scoreDifference >= 2) {
           aiSentiment = 'positive'
-          sentimentScore = Math.min(0.8, 0.2 * positiveScore)
-        } else if (positiveScore > 0) { // Any positive indicator
+          sentimentScore = Math.min(0.8, 0.12 * positiveScore)
+        }
+        // Mixed with positive lean
+        else if (positiveScore > negativeScore && positiveScore >= 2) {
           aiSentiment = 'positive'
-          sentimentScore = Math.max(0.2, 0.1 * positiveScore)
-        } else {
-          // Default to neutral only if no indicators at all
+          sentimentScore = Math.min(0.6, 0.15 * scoreDifference)
+        }
+        // Mixed with negative lean or borderline negative
+        else if (negativeScore > positiveScore && negativeScore >= 1) {
+          aiSentiment = 'negative'
+          sentimentScore = Math.max(-0.5, -0.2 * negativeScore)
+        }
+        // Neutral or unclear
+        else {
           aiSentiment = 'neutral'
-          sentimentScore = 0
+          sentimentScore = 0.05 * scoreDifference // Slight bias based on score difference
         }
       }
       
@@ -841,16 +898,35 @@ function analyzeDataFallback(data: FeedbackData[], type: string): any {
           if (text.includes('trust') || text.includes('percaya') || text.includes('yakin')) positiveScore += 2
           if (text.includes('repeat') || text.includes('again') || text.includes('lagi')) positiveScore += 2
           
-          // More aggressive negative detection - prioritize detecting complaints
-          if (negativeScore >= 1 || hasLowRating || lowSatisfaction) { // Lower threshold for negative
+          // Enhanced balanced sentiment classification
+          const scoreDifference = positiveScore - negativeScore
+          
+          // Strong negative detection
+          if (negativeScore >= 5 || (negativeScore >= 3 && positiveScore <= 2)) {
             negative++
-          } else if (positiveScore >= 4) { // Strong positive takes priority
+          }
+          // Clear negative feedback
+          else if (negativeScore >= 1 && scoreDifference <= -1) {
+            negative++
+          }
+          // Strong positive detection  
+          else if (positiveScore >= 8 || (positiveScore >= 5 && negativeScore === 0)) {
             positive++
-          } else if (positiveScore >= 2) { // Medium positive threshold
+          }
+          // Clear positive feedback
+          else if (positiveScore >= 3 && scoreDifference >= 2) {
             positive++
-          } else if (positiveScore > 0) { // Any positive indicator
+          }
+          // Mixed with positive lean
+          else if (positiveScore > negativeScore && positiveScore >= 2) {
             positive++
-          } else {
+          }
+          // Mixed with negative lean
+          else if (negativeScore > positiveScore && negativeScore >= 1) {
+            negative++
+          }
+          // Neutral
+          else {
             neutral++
           }
         }
