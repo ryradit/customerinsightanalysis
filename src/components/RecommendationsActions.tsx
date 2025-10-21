@@ -3,8 +3,7 @@
 import React, { useState } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
-import PptxGenJS from 'pptxgenjs'
-import { AnalysisResult, BusinessRecommendation, WhatIfScenario } from '@/types/analysis'
+import { AnalysisResult, BusinessRecommendation } from '@/types/analysis'
 
 interface RecommendationsActionsProps {
   result: AnalysisResult
@@ -13,7 +12,7 @@ interface RecommendationsActionsProps {
 const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result }) => {
   const [selectedDepartment, setSelectedDepartment] = useState<string>('all')
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
-  const [isGeneratingPPT, setIsGeneratingPPT] = useState(false)
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false)
 
   const departmentIcons = {
     marketing: '📢',
@@ -179,163 +178,62 @@ const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result 
     }
   }
 
-  // PowerPoint Generation Function
-  const generatePowerPointReport = async () => {
+  // Generate PowerPoint text content
+  const generatePowerPointText = (recommendations: BusinessRecommendation[]) => {
+    let content = `BUSINESS RECOMMENDATIONS REPORT\n`
+    content += `Generated on ${new Date().toLocaleDateString()}\n`
+    content += `Total Recommendations: ${recommendations.length}\n`
+    content += `Department Filter: ${selectedDepartment === 'all' ? 'All Departments' : selectedDepartment}\n\n`
+    
+    content += `=== SUMMARY ===\n`
+    const highPriorityCount = recommendations.filter(r => r.priority === 'high').length
+    const mediumPriorityCount = recommendations.filter(r => r.priority === 'medium').length
+    const lowPriorityCount = recommendations.filter(r => r.priority === 'low').length
+    
+    content += `High Priority: ${highPriorityCount} (${((highPriorityCount / recommendations.length) * 100).toFixed(1)}%)\n`
+    content += `Medium Priority: ${mediumPriorityCount} (${((mediumPriorityCount / recommendations.length) * 100).toFixed(1)}%)\n`
+    content += `Low Priority: ${lowPriorityCount} (${((lowPriorityCount / recommendations.length) * 100).toFixed(1)}%)\n\n`
+
+    recommendations.forEach((rec, index) => {
+      content += `=== RECOMMENDATION ${index + 1}: ${rec.category.replace('_', ' ').toUpperCase()} ===\n`
+      content += `Priority: ${rec.priority.toUpperCase()}\n`
+      content += `Department: ${rec.department}\n`
+      content += `Timeline: ${rec.timeframe}\n`
+      content += `Investment Required: ${rec.implementationCost}\n\n`
+      content += `Description:\n${rec.recommendation}\n\n`
+      content += `Expected Impact:\n${rec.impact}\n\n`
+      content += `Key Performance Indicators:\n${rec.kpis.map(kpi => `• ${kpi}`).join('\n')}\n\n`
+      content += `Action Items:\n${rec.actionItems.map(item => `• ${item}`).join('\n')}\n\n`
+      content += `${'='.repeat(60)}\n\n`
+    })
+    
+    return content
+  }
+
+  // Text Report Generation Function  
+  const generateTextReport = async () => {
     try {
-      setIsGeneratingPPT(true)
+      setIsGeneratingReport(true)
       
-      const pptx = new PptxGenJS()
-      pptx.layout = 'LAYOUT_WIDE'
-
-      // Title Slide
-      const titleSlide = pptx.addSlide()
-      titleSlide.addText('Business Recommendations Report', {
-        x: 1, y: 2, w: 8, h: 2,
-        fontSize: 32, bold: true, color: '1E3A8A', align: 'center'
-      })
-      titleSlide.addText(`${filteredRecommendations.length} Strategic Recommendations`, {
-        x: 1, y: 4, w: 8, h: 1,
-        fontSize: 18, color: '374151', align: 'center'
-      })
-      titleSlide.addText(`Generated on ${new Date().toLocaleDateString()}`, {
-        x: 1, y: 5.5, w: 8, h: 0.5,
-        fontSize: 14, color: '6B7280', align: 'center'
-      })
-
-      // Summary Slide
-      const summarySlide = pptx.addSlide()
-      summarySlide.addText('Recommendations Overview', {
-        x: 0.5, y: 0.5, w: 9, h: 1,
-        fontSize: 24, bold: true, color: '1E3A8A'
-      })
-
-      const highPriorityCount = filteredRecommendations.filter(r => r.priority === 'high').length
-      const mediumPriorityCount = filteredRecommendations.filter(r => r.priority === 'medium').length
-      const lowPriorityCount = filteredRecommendations.filter(r => r.priority === 'low').length
-
-      // Priority breakdown
-      const priorityRows = [
-        [
-          { text: 'Priority Level', options: { bold: true } },
-          { text: 'Count', options: { bold: true } },
-          { text: 'Percentage', options: { bold: true } }
-        ],
-        [
-          { text: 'High Priority' },
-          { text: highPriorityCount.toString() },
-          { text: `${((highPriorityCount / filteredRecommendations.length) * 100).toFixed(1)}%` }
-        ],
-        [
-          { text: 'Medium Priority' },
-          { text: mediumPriorityCount.toString() },
-          { text: `${((mediumPriorityCount / filteredRecommendations.length) * 100).toFixed(1)}%` }
-        ],
-        [
-          { text: 'Low Priority' },
-          { text: lowPriorityCount.toString() },
-          { text: `${((lowPriorityCount / filteredRecommendations.length) * 100).toFixed(1)}%` }
-        ]
-      ]
-
-      summarySlide.addTable(priorityRows, {
-        x: 0.5, y: 2, w: 4, h: 2.5,
-        fontSize: 12,
-        border: { pt: 1, color: 'D1D5DB' }
-      })
-
-      // Department breakdown
-      const departmentCounts: { [key: string]: number } = {}
-      filteredRecommendations.forEach(rec => {
-        departmentCounts[rec.category] = (departmentCounts[rec.category] || 0) + 1
-      })
-
-      const departmentRows = [
-        [
-          { text: 'Department', options: { bold: true } },
-          { text: 'Recommendations', options: { bold: true } }
-        ],
-        ...Object.entries(departmentCounts).map(([dept, count]) => [
-          { text: dept.replace('_', ' ').toUpperCase() },
-          { text: count.toString() }
-        ])
-      ]
-
-      summarySlide.addTable(departmentRows, {
-        x: 5, y: 2, w: 4, h: 2.5,
-        fontSize: 12,
-        border: { pt: 1, color: 'D1D5DB' }
-      })
-
-      // Individual recommendation slides
-      filteredRecommendations.forEach((recommendation, index) => {
-        const slide = pptx.addSlide()
-        
-        // Title
-        slide.addText(`${index + 1}. ${recommendation.department}`, {
-          x: 0.5, y: 0.5, w: 9, h: 1,
-          fontSize: 20, bold: true, color: '1E3A8A'
-        })
-
-        // Priority badge
-        const priorityColor = recommendation.priority === 'high' ? 'DC2626' : 
-                              recommendation.priority === 'medium' ? 'F59E0B' : '059669'
-        slide.addText(`${recommendation.priority.toUpperCase()} PRIORITY`, {
-          x: 7.5, y: 0.5, w: 2, h: 0.5,
-          fontSize: 10, bold: true, color: 'FFFFFF',
-          fill: { color: priorityColor },
-          align: 'center'
-        })
-
-        // Recommendation text
-        slide.addText(recommendation.recommendation, {
-          x: 0.5, y: 1.5, w: 9, h: 1.5,
-          fontSize: 14, color: '374151'
-        })
-
-        // Details table
-        const detailsRows = [
-          [
-            { text: 'Timeline', options: { bold: true } },
-            { text: recommendation.timeframe }
-          ],
-          [
-            { text: 'Investment Required', options: { bold: true } },
-            { text: recommendation.implementationCost }
-          ],
-          [
-            { text: 'Expected Impact', options: { bold: true } },
-            { text: recommendation.impact.substring(0, 100) + '...' }
-          ]
-        ]
-
-        slide.addTable(detailsRows, {
-          x: 0.5, y: 3.2, w: 9, h: 1.5,
-          fontSize: 11,
-          border: { pt: 1, color: 'D1D5DB' }
-        })
-
-        // Action items
-        slide.addText('Key Action Items:', {
-          x: 0.5, y: 5, w: 9, h: 0.5,
-          fontSize: 14, bold: true, color: '374151'
-        })
-
-        recommendation.actionItems.slice(0, 4).forEach((item, itemIndex) => {
-          slide.addText(`• ${item}`, {
-            x: 0.8, y: 5.5 + (itemIndex * 0.3), w: 8.5, h: 0.3,
-            fontSize: 11, color: '4B5563'
-          })
-        })
-      })
-
-      // Save PowerPoint
-      await pptx.writeFile({ fileName: `business-recommendations-${selectedDepartment}-${new Date().toISOString().split('T')[0]}.pptx` })
+      // Create a structured text report that can be copied to PowerPoint or Word
+      const reportText = generatePowerPointText(filteredRecommendations)
+      
+      // Download as a text file
+      const blob = new Blob([reportText], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `business-recommendations-report-${selectedDepartment}-${new Date().toISOString().split('T')[0]}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
 
     } catch (error) {
-      console.error('Error generating PowerPoint:', error)
-      alert('Failed to generate PowerPoint. Please try again.')
+      console.error('Error generating report:', error)
+      alert('Failed to generate report. Please try again.')
     } finally {
-      setIsGeneratingPPT(false)
+      setIsGeneratingReport(false)
     }
   }
 
@@ -366,11 +264,11 @@ const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result 
           )}
         </button>
         <button
-          onClick={generatePowerPointReport}
-          disabled={isGeneratingPPT}
+          onClick={generateTextReport}
+          disabled={isGeneratingReport}
           className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-50 flex items-center space-x-2 ml-3"
         >
-          {isGeneratingPPT ? (
+          {isGeneratingReport ? (
             <>
               <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -383,7 +281,7 @@ const RecommendationsActions: React.FC<RecommendationsActionsProps> = ({ result 
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span>Download PowerPoint</span>
+              <span>Download Report</span>
             </>
           )}
         </button>
